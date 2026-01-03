@@ -5,12 +5,14 @@
    ===================================================== */
 
 /*
-  ВАЖЛИВО:
-  - symptom: те, що бачить гравець
-  - realCause: реальна біологічна причина
-  - trigger: умови, за яких проблема МОЖЕ з’явитися
-  - effect: повільний негативний вплив, якщо не лікувати
-  - treatment: правильне лікування (або null)
+  СТРУКТУРА ПРОБЛЕМИ:
+  - id              унікальний ідентифікатор
+  - symptom         те, що бачить гравець
+  - realCause       реальна біологічна причина
+  - severity        рівень небезпеки (1–3)
+  - treatment       правильне лікування або null
+  - trigger(env)    умови появи
+  - effect(state)   поступовий негативний вплив
 */
 
 const plantProblems = {
@@ -22,11 +24,9 @@ const plantProblems = {
 
     {
       id: "bean_root_fungus",
-
       symptom: "🍂 Листя в’яне і темніє",
-
       realCause: "fungus",
-
+      severity: 3,
       treatment: "fungicide",
 
       trigger: env =>
@@ -35,36 +35,33 @@ const plantProblems = {
 
       effect: state => {
         state.health -= 3;
+        state.immunity -= 2;
         state.growthPoints -= 0.5;
-        state.immunity -= 1;
+        state.stressLoad += 1;
       }
     },
 
     {
       id: "bean_temp_shock",
-
       symptom: "🌡 Листя втрачає тургор",
-
       realCause: "temperature_fluctuation",
-
+      severity: 2,
       treatment: null,
 
       trigger: env =>
         env.tempFluctuation > 4,
 
       effect: state => {
-        state.immunity -= 4;
+        state.immunity -= 3;
         state.stressLoad += 1;
       }
     },
 
     {
       id: "bean_aphids",
-
       symptom: "🐞 Дрібні пошкодження на листі",
-
       realCause: "pests",
-
+      severity: 2,
       treatment: "insecticide",
 
       trigger: env =>
@@ -72,8 +69,9 @@ const plantProblems = {
         env.immunity < 50,
 
       effect: state => {
-        state.waterLevel -= 4;
+        state.waterLevel -= 3;
         state.immunity -= 2;
+        state.stressLoad += 1;
       }
     }
   ],
@@ -85,11 +83,9 @@ const plantProblems = {
 
     {
       id: "rose_powdery_mildew",
-
       symptom: "🌫 Білий наліт на листі",
-
       realCause: "fungus",
-
+      severity: 3,
       treatment: "fungicide",
 
       trigger: env =>
@@ -99,16 +95,15 @@ const plantProblems = {
       effect: state => {
         state.health -= 4;
         state.immunity -= 2;
+        state.stressLoad += 1;
       }
     },
 
     {
       id: "rose_bud_failure",
-
       symptom: "🌸 Бутони не розкриваються",
-
       realCause: "low_light",
-
+      severity: 1,
       treatment: null,
 
       trigger: env =>
@@ -116,16 +111,15 @@ const plantProblems = {
 
       effect: state => {
         state.growthPoints -= 1;
+        state.immunity -= 1;
       }
     },
 
     {
       id: "rose_root_rot",
-
       symptom: "⚠️ Рослина різко в’яне",
-
       realCause: "fungus",
-
+      severity: 3,
       treatment: "fungicide",
 
       trigger: env =>
@@ -135,6 +129,7 @@ const plantProblems = {
       effect: state => {
         state.health -= 6;
         state.immunity -= 3;
+        state.stressLoad += 2;
       }
     }
   ],
@@ -146,29 +141,25 @@ const plantProblems = {
 
     {
       id: "mint_overgrowth",
-
       symptom: "🌿 Листя дрібнішає, ріст нестабільний",
-
       realCause: "overgrowth",
-
+      severity: 1,
       treatment: null,
 
       trigger: env =>
         env.growthStreak > 6,
 
       effect: state => {
-        state.immunity -= 3;
+        state.immunity -= 2;
         state.stressLoad += 1;
       }
     },
 
     {
       id: "mint_spider_mite",
-
       symptom: "🕸 На листі з’являється павутинка",
-
       realCause: "pests",
-
+      severity: 2,
       treatment: "insecticide",
 
       trigger: env =>
@@ -178,16 +169,15 @@ const plantProblems = {
       effect: state => {
         state.waterLevel -= 3;
         state.immunity -= 2;
+        state.stressLoad += 1;
       }
     },
 
     {
       id: "mint_leaf_rot",
-
       symptom: "⚠️ Нижні листки втрачають тургор",
-
       realCause: "fungus",
-
+      severity: 2,
       treatment: "fungicide",
 
       trigger: env =>
@@ -196,13 +186,14 @@ const plantProblems = {
       effect: state => {
         state.health -= 2;
         state.immunity -= 1;
+        state.stressLoad += 1;
       }
     }
   ]
 };
 
 /* =====================================================
-   ЕКСПОРТ (для модульного використання)
+   ЕКСПОРТ (опційно для модулів)
    ===================================================== */
 if (typeof module !== "undefined") {
   module.exports = { plantProblems };
