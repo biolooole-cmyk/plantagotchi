@@ -1,6 +1,7 @@
 /* =====================================================
    PLANTAGOTCHI — GAME.JS
-   MODEL C++ : Екосистемний тиск → симптоми → проблеми → лікування
+   MODEL C++ FINAL
+   Екосистемний тиск → симптоми → проблеми → лікування
    УСІ ТЕКСТИ — УКРАЇНСЬКОЮ
    ===================================================== */
 
@@ -52,13 +53,14 @@ let soilAeration = 70;
 let immunity = 70;
 let stressLoad = 0;
 
-/* Екосистемний тиск (ключова механіка) */
+/* КЛЮЧОВА МЕХАНІКА */
 let ecosystemPressure = 0;
 
 /* ===================== ПРОБЛЕМИ ===================== */
 let activeProblem = null;
-let problemPhase = "none"; // none | symptom | active
+let problemPhase = "none"; // none | symptom | active | treatment
 let symptomTimer = 0;
+let treatmentTimer = 0;
 
 let fungicideLeft = 2;
 let insecticideLeft = 2;
@@ -157,40 +159,29 @@ function warm() {
 }
 
 /* ===================== ЛІКУВАННЯ ===================== */
-function useFungicide() {
-  if (!activeProblem || fungicideLeft <= 0) return;
+function startTreatment(type) {
+  if (!activeProblem || problemPhase !== "active") return;
 
-  if (activeProblem.treatment === "fungicide") {
-    fungicideLeft--;
-    activeProblem = null;
-    problemPhase = "none";
-    immunity = clamp(immunity + 8);
-    ecosystemPressure = Math.max(0, ecosystemPressure - 2);
-    playSound("good");
-  } else {
+  if (activeProblem.treatment !== type) {
     wrongTreatment();
+    return;
   }
-}
 
-function useInsecticide() {
-  if (!activeProblem || insecticideLeft <= 0) return;
+  if (type === "fungicide" && fungicideLeft <= 0) return;
+  if (type === "insecticide" && insecticideLeft <= 0) return;
 
-  if (activeProblem.treatment === "insecticide") {
-    insecticideLeft--;
-    activeProblem = null;
-    problemPhase = "none";
-    immunity = clamp(immunity + 6);
-    ecosystemPressure = Math.max(0, ecosystemPressure - 2);
-    playSound("good");
-  } else {
-    wrongTreatment();
-  }
+  if (type === "fungicide") fungicideLeft--;
+  if (type === "insecticide") insecticideLeft--;
+
+  problemPhase = "treatment";
+  treatmentTimer = 2;
+  playSound("good");
 }
 
 function wrongTreatment() {
-  health = clamp(health - 6);
-  immunity = clamp(immunity - 6);
-  stressLoad += 2;
+  health = clamp(health - 8);
+  immunity = clamp(immunity - 8);
+  stressLoad += 3;
   ecosystemPressure += 2;
   playSound("stress");
 }
@@ -210,6 +201,7 @@ function resetGame() {
   activeProblem = null;
   problemPhase = "none";
   symptomTimer = 0;
+  treatmentTimer = 0;
 
   fungicideLeft = 2;
   insecticideLeft = 2;
@@ -243,7 +235,6 @@ function nextDay() {
   temperature = clamp(temperature, 10, 40);
 
   evaluateEcosystem();
-  processMicroEvents();
   processProblems();
   applyHealth();
   updateGrowth();
@@ -274,17 +265,6 @@ function evaluateEcosystem() {
     "normal";
 }
 
-/* ===================== МІКРОПОДІЇ ===================== */
-function processMicroEvents() {
-  if (ecosystemPressure >= 4 && Math.random() < 0.3) {
-    stressLoad++;
-    if (hint) {
-      hint.textContent =
-        "⚠️ Мікроподія: екосистема нестабільна. Ресурси рослини виснажуються.";
-    }
-  }
-}
-
 /* ===================== ПРОБЛЕМИ ===================== */
 function processProblems() {
   if (problemPhase === "none" && ecosystemPressure >= 5) {
@@ -299,6 +279,16 @@ function processProblems() {
       const pool = plantProblems[currentPlant.id];
       activeProblem = pool[Math.floor(Math.random() * pool.length)];
       problemPhase = "active";
+    }
+  }
+
+  if (problemPhase === "treatment") {
+    treatmentTimer--;
+    if (treatmentTimer <= 0) {
+      activeProblem = null;
+      problemPhase = "none";
+      immunity = clamp(immunity + 10);
+      ecosystemPressure = Math.max(0, ecosystemPressure - 3);
     }
   }
 }
@@ -360,19 +350,19 @@ function updateUI() {
 
   if (hint) {
     hint.textContent = activeProblem
-      ? "🧠 Симптом не завжди означає причину. Оберіть правильне лікування."
+      ? "🧠 Симптом не завжди означає причину. Проаналізуйте умови."
       : compensationHints?.[plantState] || "";
   }
 
   if (fungicideBtn) {
     fungicideBtn.disabled =
-      !activeProblem || activeProblem.treatment !== "fungicide";
+      !activeProblem || activeProblem.treatment !== "fungicide" || problemPhase !== "active";
     fungicideBtn.textContent = `🦠 Проти грибка (${fungicideLeft})`;
   }
 
   if (insecticideBtn) {
     insecticideBtn.disabled =
-      !activeProblem || activeProblem.treatment !== "insecticide";
+      !activeProblem || activeProblem.treatment !== "insecticide" || problemPhase !== "active";
     insecticideBtn.textContent = `🐞 Проти шкідників (${insecticideLeft})`;
   }
 
@@ -416,5 +406,5 @@ function drawChart() {
 window.water = water;
 window.changeLight = changeLight;
 window.warm = warm;
-window.useFungicide = useFungicide;
-window.useInsecticide = useInsecticide;
+window.useFungicide = () => startTreatment("fungicide");
+window.useInsecticide = () => startTreatment("insecticide");
