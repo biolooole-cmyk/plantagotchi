@@ -1,41 +1,57 @@
+/* =====================================================
+   PLANTAGOTCHI — PROBLEMS.JS
+   КРОК 2: симптоми ≠ причина
+   Біологічно коректні проблеми з ризиком лікування
+   ===================================================== */
+
 const plantProblems = {
 
+  /* =========================
+     КВАСОЛЯ
+     ========================= */
   bean: [
+
     {
       id: "bean_root_fungus",
-      type: "fungus",
-      title: "Грибкове ураження коренів",
+      symptom: "🍂 Листя в’яне і темніє",
+      possibleCauses: ["fungus", "overwatering"],
+      realCause: "fungus",
+
       trigger: (env) =>
         env.waterLevel > 80 && env.soilAeration < 50,
 
       effect: (state) => {
         state.health -= 3;
         state.growthPoints -= 0.5;
+        state.immunity -= 1;
       },
 
-      treatment: "fungicide",
-      hint: "🦠 Коренева система уражена через надлишок вологи."
+      treatment: "fungicide"
     },
 
     {
       id: "bean_temp_shock",
-      type: "physiology",
-      title: "Температурний шок",
+      symptom: "🌡 Листя втрачає тургор",
+      possibleCauses: ["cold", "temperature_fluctuation"],
+      realCause: "temperature_fluctuation",
+
       trigger: (env) =>
         env.tempFluctuation > 4,
 
       effect: (state) => {
         state.immunity -= 4;
+        state.stressLoad += 1;
       },
 
-      treatment: null,
-      hint: "🌡 Різкі перепади температури порушують обмін речовин."
+      treatment: null
     },
 
     {
       id: "bean_aphids",
-      type: "pest",
-      title: "Попелиця",
+      symptom: "🐞 Дрібні пошкодження на листі",
+      possibleCauses: ["pests"],
+      realCause: "pests",
+
       trigger: (env) =>
         env.airHumidity < 35 && env.immunity < 50,
 
@@ -44,102 +60,128 @@ const plantProblems = {
         state.immunity -= 2;
       },
 
-      treatment: "insecticide",
-      hint: "🐛 Листя пошкоджене шкідниками."
+      treatment: "insecticide"
     }
   ],
 
+  /* =========================
+     ТРОЯНДА
+     ========================= */
   rose: [
+
     {
       id: "rose_powdery_mildew",
-      type: "fungus",
-      title: "Борошниста роса",
+      symptom: "🌫 Білий наліт на листі",
+      possibleCauses: ["fungus", "stagnant_air"],
+      realCause: "fungus",
+
       trigger: (env) =>
         env.airHumidity > 75 && env.airFlow < 30,
 
       effect: (state) => {
         state.health -= 4;
+        state.immunity -= 2;
       },
 
-      treatment: "fungicide",
-      hint: "🦠 Ознаки грибкового нальоту на листі."
+      treatment: "fungicide"
     },
 
     {
       id: "rose_bud_failure",
-      type: "physiology",
-      title: "Бутони не розкриваються",
+      symptom: "🌸 Бутони не розкриваються",
+      possibleCauses: ["low_light", "cold"],
+      realCause: "low_light",
+
       trigger: (env) =>
         env.lightLevel < 60,
 
       effect: (state) => {
         state.growthBlocked = true;
+        state.growthPoints -= 1;
       },
 
-      treatment: null,
-      hint: "🌸 Недостатнє світло для цвітіння."
+      treatment: null
     },
 
     {
       id: "rose_root_rot",
-      type: "fungus",
-      title: "Коренева гниль",
+      symptom: "⚠️ Рослина різко в’яне",
+      possibleCauses: ["fungus", "overwatering"],
+      realCause: "fungus",
+
       trigger: (env) =>
-        env.waterLevel > 85,
+        env.waterLevel > 85 && env.soilAeration < 45,
 
       effect: (state) => {
         state.health -= 6;
+        state.immunity -= 3;
       },
 
-      treatment: "fungicide",
-      hint: "⚠️ Коріння уражене через застій води."
+      treatment: "fungicide"
     }
   ],
 
+  /* =========================
+     М’ЯТА
+     ========================= */
   mint: [
+
     {
       id: "mint_overgrowth",
-      type: "system",
-      title: "Переріст і виснаження",
+      symptom: "🌿 Листя дрібнішає, ріст нестабільний",
+      possibleCauses: ["overgrowth", "resource_depletion"],
+      realCause: "overgrowth",
+
       trigger: (env) =>
         env.growthStreak > 6,
 
       effect: (state) => {
         state.immunity -= 3;
+        state.stressLoad += 1;
       },
 
-      treatment: null,
-      hint: "🌿 Надто інтенсивний ріст виснажує рослину."
+      treatment: null
     },
 
     {
       id: "mint_spider_mite",
-      type: "pest",
-      title: "Павутинний кліщ",
+      symptom: "🕸 На листі з’являється павутинка",
+      possibleCauses: ["pests", "dry_air"],
+      realCause: "pests",
+
       trigger: (env) =>
         env.airHumidity < 30 && env.temperature > 26,
 
       effect: (state) => {
         state.waterLevel -= 3;
+        state.immunity -= 2;
       },
 
-      treatment: "insecticide",
-      hint: "🐛 На листі з’являється павутинка."
+      treatment: "insecticide"
     },
 
     {
       id: "mint_leaf_rot",
-      type: "fungus",
-      title: "Загнивання нижніх листків",
+      symptom: "⚠️ Нижні листки втрачають тургор",
+      possibleCauses: ["fungus", "poor_aeration"],
+      realCause: "fungus",
+
       trigger: (env) =>
         env.soilAeration < 40,
 
       effect: (state) => {
         state.health -= 2;
+        state.immunity -= 1;
       },
 
-      treatment: "fungicide",
-      hint: "⚠️ Нижні листки втрачають тургор."
+      treatment: "fungicide"
     }
   ]
 };
+
+/* =====================================================
+   ЕКСПОРТ (опційно)
+   ===================================================== */
+if (typeof module !== "undefined") {
+  module.exports = { plantProblems };
+}
