@@ -15,7 +15,7 @@ const sounds = {
 };
 
 function enableAudio() {
-  if (!audioEnabled) audioEnabled = true;
+  audioEnabled = true;
 }
 
 function playSound(name) {
@@ -48,13 +48,8 @@ let ecosystemPressure = 0;
 
 /* ===================== ПРОБЛЕМИ ===================== */
 let activeProblem = null;
-let problemPhase = "none"; // none | symptom | active | treatment | recovery
+let problemPhase = "none"; // none | symptom | active
 let symptomTimer = 0;
-let treatmentTimer = 0;
-let recoveryTimer = 0;
-
-let fungicideLeft = 2;
-let insecticideLeft = 2;
 
 /* ===================== СТАН ===================== */
 let plantState = "normal";
@@ -70,6 +65,7 @@ let history = [];
 let lastTemperature = temperature;
 
 /* ===================== DOM ===================== */
+const plantBox = document.querySelector(".plant-box");
 const img = document.getElementById("plantImage");
 const ctx = document.getElementById("chart")?.getContext("2d");
 
@@ -95,11 +91,11 @@ document.getElementById("plantSelect")?.addEventListener("change", e => {
   startTimer();
 });
 
-/* ===================== ДІАГНОСТИКА ===================== */
-function toggleDiagnostic() {
+/* кнопка діагностики */
+document.getElementById("diagnosticBtn")?.addEventListener("click", () => {
   diagnosticMode = !diagnosticMode;
   updateUI();
-}
+});
 
 /* ===================== ТАЙМЕР ===================== */
 function startTimer() {
@@ -109,23 +105,20 @@ function startTimer() {
 
 /* ===================== ДІЇ ===================== */
 function water() {
-  enableAudio();
   waterLevel = clamp(waterLevel + 12);
-  airHumidity = clamp(airHumidity + 5);
-  soilAeration = clamp(soilAeration - 3);
+  airHumidity = clamp(airHumidity + 4);
+  soilAeration = clamp(soilAeration - 2);
   ecosystemPressure = Math.max(0, ecosystemPressure - 1);
   playSound("good");
 }
 
 function changeLight() {
-  enableAudio();
   lightLevel = lightLevel > 60 ? 50 : 80;
   ecosystemPressure = Math.max(0, ecosystemPressure - 0.5);
   playSound("good");
 }
 
 function warm() {
-  enableAudio();
   temperature = clamp(temperature + 2, 10, 40);
   playSound("good");
 }
@@ -145,11 +138,6 @@ function resetGame() {
   activeProblem = null;
   problemPhase = "none";
   symptomTimer = 0;
-  treatmentTimer = 0;
-  recoveryTimer = 0;
-
-  fungicideLeft = 2;
-  insecticideLeft = 2;
 
   waterLevel = 65;
   lightLevel = 70;
@@ -163,11 +151,13 @@ function resetGame() {
   plantState = "normal";
   history = [100];
 
+  diagnosticMode = false;
+
   updateUI();
   drawChart();
 }
 
-/* ===================== ДЕНЬ ===================== */
+/* ===================== ДЕННИЙ ЦИКЛ ===================== */
 function nextDay() {
   if (plantState === "dead" || day >= maxDays) return;
   day++;
@@ -248,6 +238,8 @@ function applyHealth() {
 
   health = clamp(health + delta);
   history.push(health);
+
+  if (health <= 0) playSound("dead");
 }
 
 /* ===================== РІСТ ===================== */
@@ -278,15 +270,15 @@ function updateUI() {
   if (diagnosticMode) {
     stateReason.innerHTML = `
       <strong>🔬 Діагностика екосистеми</strong><br>
-      💧 Волога: ${waterLevel}%<br>
-      ☀️ Світло: ${lightLevel}%<br>
+      💧 Волога ґрунту: ${waterLevel}%<br>
+      ☀️ Освітлення: ${lightLevel}%<br>
       🌡 Температура: ${temperature}°C<br>
       🛡 Імунітет: ${immunity}<br>
-      ⚠️ Тиск: ${ecosystemPressure}/10<br>
+      ⚠️ Екосистемний тиск: ${ecosystemPressure}/10<br>
       😵 Стрес: ${stressLoad}
     `;
     hint.textContent =
-      "Діагностика показує причини, а не симптоми.";
+      "Діагностика показує приховані причини проблем.";
   } else {
     stateReason.textContent = activeProblem
       ? activeProblem.symptom
@@ -300,6 +292,9 @@ function updateUI() {
 
 /* ===================== ВІЗУАЛ ===================== */
 function updateVisual() {
+  plantBox.className = "plant-box";
+  plantBox.classList.add(`state-${plantState}`);
+
   const id = currentPlant.id;
   img.src =
     plantState === "dead"
@@ -329,4 +324,3 @@ function drawChart() {
 window.water = water;
 window.changeLight = changeLight;
 window.warm = warm;
-window.toggleDiagnostic = toggleDiagnostic;
