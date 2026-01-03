@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <meta name="description" content="Plantagotchi — навчальна STEM-гра про екосистему кімнатної рослини">
   <meta name="keywords" content="біологія, рослини, STEM, екосистема, навчальна гра">
+
   <title>Plantagotchi — навчальна біологічна гра</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -20,9 +22,9 @@
 <main class="game-layout">
 
   <!-- ========== LEFT COLUMN: CONTROLS ========== -->
-  <section class="column controls-column">
+  <section class="column controls-column" aria-label="Панель керування">
     <h3>Керування</h3>
-    
+
     <div class="plant-select">
       <label for="plantSelect">Вибір рослини</label>
       <select id="plantSelect">
@@ -32,65 +34,86 @@
         <option value="mint">🌿 М'ята</option>
       </select>
     </div>
-    
+
     <div class="controls">
-      <button onclick="water()" aria-label="Полити рослину">💧 Полити</button>
-      <button onclick="changeLight()" aria-label="Змінити освітлення">☀️ Змінити освітлення</button>
-      <button onclick="warm()" aria-label="Зігріти">🔥 Зігріти</button>
+      <button onclick="water()" aria-label="Полити рослину">
+        💧 Полити
+      </button>
+
+      <button onclick="changeLight()" aria-label="Змінити освітлення">
+        ☀️ Змінити освітлення
+      </button>
+
+      <button onclick="warm()" aria-label="Підвищити температуру">
+        🔥 Зігріти
+      </button>
     </div>
-    
-    <button id="pauseBtn" aria-label="Пауза">⏸ Пауза</button>
+
+    <button id="pauseBtn" aria-label="Пауза або продовження гри">
+      ⏸ Пауза
+    </button>
+
     <p id="dayLabel">День: 0 / 35</p>
   </section>
 
   <!-- ========== CENTER COLUMN: PLANT + INDICATORS ========== -->
-  <section class="column center-column">
+  <section class="column center-column" aria-label="Стан рослини">
     <div class="plant-box">
-      <img 
-        id="plantImage" 
-        src="" 
-        alt="Візуалізація рослини" 
+      <img
+        id="plantImage"
+        src=""
+        alt="Візуалізація стану рослини"
         style="display:none;"
       >
     </div>
-    
+
     <div class="indicators">
+
       <div class="indicator">
         <span class="label">💧 Вологість ґрунту</span>
-        <progress id="waterBar" max="100" value="0" aria-label="Рівень води"></progress>
+        <progress id="waterBar" max="100" value="0"
+          aria-label="Рівень вологості ґрунту">
+        </progress>
       </div>
-      
+
       <div class="indicator">
         <span class="label">☀️ Освітлення</span>
-        <progress id="lightBar" max="100" value="0" aria-label="Рівень світла"></progress>
+        <progress id="lightBar" max="100" value="0"
+          aria-label="Рівень освітлення">
+        </progress>
       </div>
-      
+
       <div class="indicator">
         <span class="label">🌡️ Температура</span>
-        <progress id="tempBar" max="100" value="0" aria-label="Рівень температури"></progress>
+        <progress id="tempBar" max="100" value="0"
+          aria-label="Рівень температури">
+        </progress>
       </div>
-      
+
       <div class="indicator">
         <span class="label">❤️ Загальний стан рослини</span>
-        <progress id="healthBar" max="100" value="100" aria-label="Здоров'я рослини"></progress>
+        <progress id="healthBar" max="100" value="100"
+          aria-label="Загальний рівень здоров'я рослини">
+        </progress>
       </div>
+
     </div>
   </section>
 
   <!-- ========== RIGHT COLUMN: ANALYSIS ========== -->
-  <section class="column analysis-column">
+  <section class="column analysis-column" aria-label="Аналіз стану">
     <h3>Стан і поради</h3>
+
     <div id="stateReason" role="status" aria-live="polite"></div>
     <div id="hint" role="status" aria-live="polite"></div>
-    
-    <h3>📈 Зміна стану з часом</h3>
-    <canvas 
-      id="chart" 
-      width="320" 
+
+    <h3>📈 Динаміка стану рослини</h3>
+    <canvas
+      id="chart"
+      width="320"
       height="150"
       role="img"
-      aria-label="Графік здоров'я рослини"
-    >
+      aria-label="Графік зміни здоров'я рослини з часом">
       Ваш браузер не підтримує canvas
     </canvas>
   </section>
