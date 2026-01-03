@@ -46,7 +46,6 @@ header p {
   min-height: calc(100vh - 88px);
 }
 
-/* Загальні стилі колонок */
 .column {
   padding: 16px;
   overflow-y: auto;
@@ -66,7 +65,6 @@ header p {
   color: #2e7d32;
 }
 
-/* Вибір рослини */
 .plant-select {
   margin-bottom: 16px;
 }
@@ -76,7 +74,6 @@ header p {
   margin-bottom: 6px;
   font-size: 14px;
   font-weight: 600;
-  color: #333;
 }
 
 .plant-select select {
@@ -86,7 +83,6 @@ header p {
   border: 1px solid #bbb;
   border-radius: 6px;
   background: #fff;
-  cursor: pointer;
 }
 
 .plant-select select:focus {
@@ -95,7 +91,7 @@ header p {
   box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.15);
 }
 
-/* Кнопки дій */
+/* ===== КНОПКИ ===== */
 .controls {
   display: flex;
   flex-direction: column;
@@ -163,6 +159,7 @@ header p {
   position: relative;
 }
 
+/* РОСЛИНА */
 .plant-box img {
   max-height: 280px;
   max-width: 90%;
@@ -170,7 +167,21 @@ header p {
   transition: transform 0.3s ease, filter 0.3s ease;
 }
 
-/* ================= ІНДИКАТОРИ ================= */
+/* ===== ВІЗУАЛЬНІ ПРОБЛЕМИ ===== */
+.plant-stress img {
+  filter: saturate(0.7) brightness(0.95);
+  animation: stressShake 3s infinite ease-in-out;
+}
+
+.plant-dry img {
+  filter: saturate(0.6) brightness(0.9);
+}
+
+.plant-dead img {
+  filter: grayscale(1) brightness(0.8);
+}
+
+/* ===== ІНДИКАТОРИ ===== */
 .indicators {
   width: 100%;
   max-width: 480px;
@@ -184,7 +195,6 @@ header p {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 4px;
-  color: #444;
 }
 
 /* Progress bars */
@@ -196,7 +206,6 @@ progress {
   overflow: hidden;
 }
 
-/* Webkit */
 progress::-webkit-progress-bar {
   background: #e0e0e0;
 }
@@ -206,18 +215,12 @@ progress::-webkit-progress-value {
   border-radius: 9px;
 }
 
-/* Firefox */
-progress::-moz-progress-bar {
-  border-radius: 9px;
-}
-
-/* Кольори */
 #waterBar::-webkit-progress-value { background: linear-gradient(90deg, #42a5f5, #1e88e5); }
 #lightBar::-webkit-progress-value { background: linear-gradient(90deg, #ffd54f, #ffa726); }
 #tempBar::-webkit-progress-value { background: linear-gradient(90deg, #ef5350, #e53935); }
 #healthBar::-webkit-progress-value { background: linear-gradient(90deg, #66bb6a, #2e7d32); }
 
-/* ================= ПРАВА КОЛОНКА — АНАЛІЗ ================= */
+/* ================= АНАЛІЗ ================= */
 .analysis-column {
   width: 36%;
   background: #fcfcfc;
@@ -230,7 +233,7 @@ progress::-moz-progress-bar {
   margin-bottom: 12px;
 }
 
-/* Причина стану */
+/* Причина */
 #stateReason {
   padding: 12px;
   margin-bottom: 16px;
@@ -252,23 +255,36 @@ progress::-moz-progress-bar {
   margin-bottom: 20px;
 }
 
+/* ===== ДІАГНОСТИКА ===== */
+#diagnosticsPanel {
+  padding: 12px;
+  background: #f1f8e9;
+  border-left: 4px solid #7cb342;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+#diagnosticsPanel ul {
+  padding-left: 18px;
+  font-size: 13px;
+}
+
+#diagnosticsPanel li {
+  margin-bottom: 6px;
+}
+
 /* ================= ГРАФІК ================= */
 canvas {
   width: 100%;
-  max-width: 100%;
   border: 1px solid #ccc;
   background: #fff;
   border-radius: 4px;
 }
 
-/* ================= СТАНИ ТА НАПРУГА ================= */
-.warning-state {
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+/* ================= АНІМАЦІЇ ================= */
+@keyframes stressShake {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(2px); }
 }
 
 /* ================= АДАПТИВ ================= */
@@ -300,14 +316,6 @@ button:focus-visible,
 select:focus-visible {
   outline: 2px solid #2e7d32;
   outline-offset: 2px;
-}
-
-/* Зменшення анімації */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
 }
 
 /* ================= УТИЛІТИ ================= */
