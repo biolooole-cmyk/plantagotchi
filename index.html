@@ -36,49 +36,42 @@
     </div>
 
     <div class="controls">
-      <button onclick="water()" aria-label="Полити рослину">
-        💧 Полити
-      </button>
-
-      <button onclick="changeLight()" aria-label="Змінити освітлення">
-        ☀️ Змінити освітлення
-      </button>
-
-      <button onclick="warm()" aria-label="Підвищити температуру">
-        🔥 Зігріти
-      </button>
+      <button onclick="water()">💧 Полити</button>
+      <button onclick="changeLight()">☀️ Змінити освітлення</button>
+      <button onclick="warm()">🔥 Зігріти</button>
     </div>
 
-    <!-- ====== КОНТЕКСТНЕ ЛІКУВАННЯ ====== -->
+    <!-- ====== ЛІКУВАННЯ ====== -->
     <div class="controls treatment-controls">
       <h4>🧪 Лікування</h4>
+      <p class="small-note">
+        Лікування доступне лише після появи симптомів
+      </p>
 
-      <button
-        id="fungicideBtn"
-        onclick="useFungicide()"
-        disabled
-        aria-label="Застосувати протигрибковий препарат">
+      <button id="fungicideBtn" onclick="useFungicide()" disabled>
         🦠 Проти грибка
       </button>
 
-      <button
-        id="insecticideBtn"
-        onclick="useInsecticide()"
-        disabled
-        aria-label="Застосувати препарат проти шкідників">
+      <button id="insecticideBtn" onclick="useInsecticide()" disabled>
         🐞 Проти шкідників
       </button>
     </div>
 
-    <button id="pauseBtn" aria-label="Пауза або продовження гри">
-      ⏸ Пауза
-    </button>
+    <!-- ====== ДІАГНОСТИКА ====== -->
+    <div class="controls diagnostics-controls">
+      <button id="diagnosticBtn">
+        🔍 Режим діагностики
+      </button>
+    </div>
+
+    <button id="pauseBtn">⏸ Пауза</button>
 
     <p id="dayLabel">День: 0 / 35</p>
   </section>
 
   <!-- ========== CENTER COLUMN: PLANT + INDICATORS ========== -->
   <section class="column center-column" aria-label="Стан рослини">
+
     <div class="plant-box">
       <img
         id="plantImage"
@@ -86,48 +79,33 @@
         alt="Візуалізація стану рослини"
         style="display:none;"
       >
+
+      <!-- ⚠️ ВІЗУАЛЬНІ ПОПЕРЕДЖЕННЯ -->
+      <div id="visualAlerts" class="visual-alerts hidden">
+        <!-- JS буде додавати іконки -->
+      </div>
     </div>
 
     <div class="indicators">
 
       <div class="indicator">
         <span class="label">💧 Вологість ґрунту</span>
-        <progress
-          id="waterBar"
-          max="100"
-          value="0"
-          aria-label="Рівень вологості ґрунту">
-        </progress>
+        <progress id="waterBar" max="100" value="0"></progress>
       </div>
 
       <div class="indicator">
         <span class="label">☀️ Освітлення</span>
-        <progress
-          id="lightBar"
-          max="100"
-          value="0"
-          aria-label="Рівень освітлення">
-        </progress>
+        <progress id="lightBar" max="100" value="0"></progress>
       </div>
 
       <div class="indicator">
         <span class="label">🌡️ Температура</span>
-        <progress
-          id="tempBar"
-          max="100"
-          value="0"
-          aria-label="Рівень температури">
-        </progress>
+        <progress id="tempBar" max="100" value="0"></progress>
       </div>
 
       <div class="indicator">
         <span class="label">❤️ Загальний стан рослини</span>
-        <progress
-          id="healthBar"
-          max="100"
-          value="100"
-          aria-label="Загальний рівень здоров'я рослини">
-        </progress>
+        <progress id="healthBar" max="100" value="100"></progress>
       </div>
 
     </div>
@@ -135,20 +113,21 @@
 
   <!-- ========== RIGHT COLUMN: ANALYSIS ========== -->
   <section class="column analysis-column" aria-label="Аналіз стану">
-    <h3>Стан і поради</h3>
+    <h3>🧠 Аналіз стану</h3>
 
-    <div id="stateReason" role="status" aria-live="polite"></div>
-    <div id="hint" role="status" aria-live="polite"></div>
+    <div id="stateReason"></div>
+    <div id="hint"></div>
 
-    <h3>📈 Динаміка стану рослини</h3>
-    <canvas
-      id="chart"
-      width="320"
-      height="150"
-      role="img"
-      aria-label="Графік зміни здоров'я рослини з часом">
-      Ваш браузер не підтримує canvas
-    </canvas>
+    <!-- ====== ДІАГНОСТИКА ====== -->
+    <div id="diagnosticsPanel" class="hidden">
+      <h4>🔬 Діагностика екосистеми</h4>
+      <ul id="diagnosticsList">
+        <!-- JS: тиск, імунітет, ризики -->
+      </ul>
+    </div>
+
+    <h3>📈 Динаміка здоровʼя</h3>
+    <canvas id="chart" width="320" height="150"></canvas>
   </section>
 
 </main>
