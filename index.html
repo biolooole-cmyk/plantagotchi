@@ -49,6 +49,27 @@
       </button>
     </div>
 
+    <!-- ====== КОНТЕКСТНЕ ЛІКУВАННЯ ====== -->
+    <div class="controls treatment-controls">
+      <h4>🧪 Лікування</h4>
+
+      <button
+        id="fungicideBtn"
+        onclick="useFungicide()"
+        disabled
+        aria-label="Застосувати протигрибковий препарат">
+        🦠 Проти грибка
+      </button>
+
+      <button
+        id="insecticideBtn"
+        onclick="useInsecticide()"
+        disabled
+        aria-label="Застосувати препарат проти шкідників">
+        🐞 Проти шкідників
+      </button>
+    </div>
+
     <button id="pauseBtn" aria-label="Пауза або продовження гри">
       ⏸ Пауза
     </button>
@@ -71,28 +92,40 @@
 
       <div class="indicator">
         <span class="label">💧 Вологість ґрунту</span>
-        <progress id="waterBar" max="100" value="0"
+        <progress
+          id="waterBar"
+          max="100"
+          value="0"
           aria-label="Рівень вологості ґрунту">
         </progress>
       </div>
 
       <div class="indicator">
         <span class="label">☀️ Освітлення</span>
-        <progress id="lightBar" max="100" value="0"
+        <progress
+          id="lightBar"
+          max="100"
+          value="0"
           aria-label="Рівень освітлення">
         </progress>
       </div>
 
       <div class="indicator">
         <span class="label">🌡️ Температура</span>
-        <progress id="tempBar" max="100" value="0"
+        <progress
+          id="tempBar"
+          max="100"
+          value="0"
           aria-label="Рівень температури">
         </progress>
       </div>
 
       <div class="indicator">
         <span class="label">❤️ Загальний стан рослини</span>
-        <progress id="healthBar" max="100" value="100"
+        <progress
+          id="healthBar"
+          max="100"
+          value="100"
           aria-label="Загальний рівень здоров'я рослини">
         </progress>
       </div>
@@ -123,6 +156,7 @@
 <!-- ================= SCRIPTS ================= -->
 <script src="plants.js"></script>
 <script src="hints.js"></script>
+<script src="problems.js"></script>
 <script src="game.js"></script>
 
 </body>
