@@ -1,8 +1,6 @@
 /* =====================================================
    PLANTAGOTCHI — GAME.JS
-   MODEL C++ FINAL
-   Екосистемний тиск → симптоми → проблеми → лікування
-   УСІ ТЕКСТИ — УКРАЇНСЬКОЮ
+   MODEL C++ FINAL (STABLE & EXPLAINABLE)
    ===================================================== */
 
 /* ===================== АУДІО ===================== */
@@ -17,43 +15,33 @@ const sounds = {
 };
 
 function enableAudio() {
-  if (!audioEnabled) {
-    Object.values(sounds).forEach(a => {
-      a.volume = 0.8;
-      a.play().then(() => a.pause()).catch(() => {});
-      a.currentTime = 0;
-    });
-    audioEnabled = true;
-  }
+  if (audioEnabled) return;
+  audioEnabled = true;
 }
 
 function playSound(name) {
-  if (audioEnabled && sounds[name]) {
-    sounds[name].currentTime = 0;
-    sounds[name].play().catch(() => {});
-  }
+  if (!audioEnabled || !sounds[name]) return;
+  const s = sounds[name].cloneNode();
+  s.volume = 0.8;
+  s.play().catch(() => {});
 }
 
-/* ===================== ГЛОБАЛЬНІ ЗМІННІ ===================== */
+/* ===================== ГЛОБАЛЬНІ ===================== */
 let currentPlant = null;
 let day = 0;
 const maxDays = 35;
-let gameTimer = null;
-let isPaused = false;
+let timer = null;
 
 /* ===================== ЕКОСИСТЕМА ===================== */
 let waterLevel = 65;
 let lightLevel = 70;
 let temperature = 22;
-
 let airHumidity = 50;
 let airFlow = 30;
 let soilAeration = 70;
 
 let immunity = 70;
 let stressLoad = 0;
-
-/* КЛЮЧОВА МЕХАНІКА */
 let ecosystemPressure = 0;
 
 /* ===================== ПРОБЛЕМИ ===================== */
@@ -80,8 +68,7 @@ let lastTemperature = temperature;
 
 /* ===================== DOM ===================== */
 const img = document.getElementById("plantImage");
-const canvas = document.getElementById("chart");
-const ctx = canvas ? canvas.getContext("2d") : null;
+const ctx = document.getElementById("chart")?.getContext("2d");
 
 const waterBar = document.getElementById("waterBar");
 const lightBar = document.getElementById("lightBar");
@@ -95,48 +82,27 @@ const hint = document.getElementById("hint");
 const fungicideBtn = document.getElementById("fungicideBtn");
 const insecticideBtn = document.getElementById("insecticideBtn");
 
-/* ===================== ДОПОМІЖНІ ===================== */
-const clamp = (v, min = 0, max = 100) =>
-  Math.max(min, Math.min(max, v));
+/* ===================== УТИЛІТИ ===================== */
+const clamp = (v, min = 0, max = 100) => Math.max(min, Math.min(max, v));
 
-function collectEnvironment() {
-  return {
-    waterLevel,
-    lightLevel,
-    temperature,
-    airHumidity,
-    airFlow,
-    soilAeration,
-    immunity,
-    growthStreak,
-    tempFluctuation: Math.abs(temperature - lastTemperature),
-    ecosystemPressure
-  };
-}
-
-/* ===================== ВИБІР РОСЛИНИ ===================== */
+/* ===================== СТАРТ ===================== */
 document.getElementById("plantSelect")?.addEventListener("change", e => {
   enableAudio();
   currentPlant = plants[e.target.value];
   resetGame();
-  if (img) img.style.display = "block";
+  img.style.display = "block";
   playSound("start");
   startTimer();
 });
 
 /* ===================== ТАЙМЕР ===================== */
 function startTimer() {
-  clearInterval(gameTimer);
-  gameTimer = setInterval(() => {
-    if (!isPaused && plantState !== "dead" && day < maxDays) {
-      nextDay();
-    }
-  }, 4000);
+  clearInterval(timer);
+  timer = setInterval(nextDay, 4000);
 }
 
-/* ===================== ДІЇ ГРАВЦЯ ===================== */
+/* ===================== ДІЇ ===================== */
 function water() {
-  enableAudio();
   waterLevel = clamp(waterLevel + 15);
   airHumidity = clamp(airHumidity + 6);
   soilAeration = clamp(soilAeration - 5);
@@ -145,14 +111,12 @@ function water() {
 }
 
 function changeLight() {
-  enableAudio();
   lightLevel = lightLevel > 60 ? 45 : 80;
   ecosystemPressure = Math.max(0, ecosystemPressure - 0.5);
   playSound("good");
 }
 
 function warm() {
-  enableAudio();
   temperature = clamp(temperature + 3, 10, 40);
   airHumidity = clamp(airHumidity - 4);
   playSound("good");
@@ -167,11 +131,8 @@ function startTreatment(type) {
     return;
   }
 
-  if (type === "fungicide" && fungicideLeft <= 0) return;
-  if (type === "insecticide" && insecticideLeft <= 0) return;
-
-  if (type === "fungicide") fungicideLeft--;
-  if (type === "insecticide") insecticideLeft--;
+  if (type === "fungicide" && fungicideLeft-- <= 0) return;
+  if (type === "insecticide" && insecticideLeft-- <= 0) return;
 
   problemPhase = "treatment";
   treatmentTimer = 2;
@@ -186,53 +147,17 @@ function wrongTreatment() {
   playSound("stress");
 }
 
-/* ===================== RESET ===================== */
-function resetGame() {
-  day = 0;
-  health = 100;
-  immunity = 70;
-  stressLoad = 0;
-  ecosystemPressure = 0;
-
-  stageIndex = 0;
-  growthPoints = 0;
-  growthStreak = 0;
-
-  activeProblem = null;
-  problemPhase = "none";
-  symptomTimer = 0;
-  treatmentTimer = 0;
-
-  fungicideLeft = 2;
-  insecticideLeft = 2;
-
-  waterLevel = 65;
-  lightLevel = 70;
-  temperature = 22;
-  lastTemperature = temperature;
-
-  airHumidity = 50;
-  airFlow = 30;
-  soilAeration = 70;
-
-  plantState = "normal";
-  history = [100];
-
-  updateUI();
-  drawChart();
-}
-
-/* ===================== ДЕННИЙ ЦИКЛ ===================== */
+/* ===================== ДЕНЬ ===================== */
 function nextDay() {
+  if (plantState === "dead" || day >= maxDays) return;
   day++;
+
   lastTemperature = temperature;
 
-  waterLevel = clamp(waterLevel - (4 + airFlow * 0.05));
-  airHumidity = clamp(airHumidity - airFlow * 0.08);
+  waterLevel = clamp(waterLevel - 4);
+  airHumidity = clamp(airHumidity - 2);
   soilAeration = clamp(soilAeration - (waterLevel > 80 ? 2 : 0));
-
   temperature += Math.random() < 0.5 ? -1 : 1;
-  temperature = clamp(temperature, 10, 40);
 
   evaluateEcosystem();
   processProblems();
@@ -243,7 +168,7 @@ function nextDay() {
   drawChart();
 }
 
-/* ===================== ОЦІНКА ЕКОСИСТЕМИ ===================== */
+/* ===================== ЕКОСИСТЕМА ===================== */
 function evaluateEcosystem() {
   const o = currentPlant.optimal;
 
@@ -253,21 +178,21 @@ function evaluateEcosystem() {
 
   ecosystemPressure = clamp(ecosystemPressure, 0, 10);
 
-  immunity += ecosystemPressure > 4 ? -3 : 2;
+  immunity += ecosystemPressure >= 5 ? -2 : 1;
   immunity = clamp(immunity);
 
-  stressLoad = immunity < 30 ? stressLoad + 2 : Math.max(0, stressLoad - 1);
+  stressLoad = immunity < 30 ? stressLoad + 1 : Math.max(0, stressLoad - 1);
 
   plantState =
     health <= 0 ? "dead" :
     stressLoad >= 6 ? "stress" :
-    ecosystemPressure >= 5 ? "dry" :
+    ecosystemPressure >= 6 ? "dry" :
     "normal";
 }
 
 /* ===================== ПРОБЛЕМИ ===================== */
 function processProblems() {
-  if (problemPhase === "none" && ecosystemPressure >= 5) {
+  if (problemPhase === "none" && ecosystemPressure >= 6) {
     problemPhase = "symptom";
     symptomTimer = 2;
     playSound("stress");
@@ -276,9 +201,9 @@ function processProblems() {
   if (problemPhase === "symptom") {
     symptomTimer--;
     if (symptomTimer <= 0) {
-      const pool = plantProblems[currentPlant.id];
-      activeProblem = pool[Math.floor(Math.random() * pool.length)];
-      problemPhase = "active";
+      activeProblem = plantProblems[currentPlant.id]
+        .find(p => p.trigger({ waterLevel, airHumidity, soilAeration, temperature, immunity, growthStreak }));
+      problemPhase = activeProblem ? "active" : "none";
     }
   }
 
@@ -287,7 +212,7 @@ function processProblems() {
     if (treatmentTimer <= 0) {
       activeProblem = null;
       problemPhase = "none";
-      immunity = clamp(immunity + 10);
+      immunity = clamp(immunity + 8);
       ecosystemPressure = Math.max(0, ecosystemPressure - 3);
     }
   }
@@ -297,17 +222,12 @@ function processProblems() {
 function applyHealth() {
   let delta =
     plantState === "normal" ? 2 :
-    plantState === "stress" ? -5 :
-    plantState === "dry" ? -4 : 0;
+    plantState === "stress" ? -4 :
+    plantState === "dry" ? -3 : 0;
 
   if (activeProblem && problemPhase === "active") {
-    delta -= 3;
-    activeProblem.effect({
-      health,
-      immunity,
-      growthPoints,
-      stressLoad
-    });
+    delta -= 2;
+    activeProblem.effect({ health, immunity, growthPoints, stressLoad });
   }
 
   health = clamp(health + delta);
@@ -333,47 +253,34 @@ function updateGrowth() {
 
 /* ===================== UI ===================== */
 function updateUI() {
-  if (waterBar) waterBar.value = clamp(waterLevel);
-  if (lightBar) lightBar.value = clamp(lightLevel);
-  if (tempBar) tempBar.value = clamp((temperature - 10) * (100 / 30));
-  if (healthBar) healthBar.value = health;
+  waterBar.value = waterLevel;
+  lightBar.value = lightLevel;
+  tempBar.value = (temperature - 10) * 3.3;
+  healthBar.value = health;
 
-  if (dayLabel) {
-    dayLabel.textContent = `День: ${day} / ${maxDays}`;
-  }
+  dayLabel.textContent = `День: ${day} / ${maxDays}`;
 
-  if (stateReason) {
-    stateReason.textContent = activeProblem
-      ? activeProblem.symptom
-      : stateReasons?.[plantState] || "";
-  }
+  stateReason.textContent = activeProblem
+    ? activeProblem.symptom
+    : stateReasons[plantState];
 
-  if (hint) {
-    hint.textContent = activeProblem
-      ? "🧠 Симптом не завжди означає причину. Проаналізуйте умови."
-      : compensationHints?.[plantState] || "";
-  }
+  hint.textContent =
+    problemPhase === "symptom"
+      ? "🔍 Режим діагностики: спостерігайте за рослиною."
+      : compensationHints[plantState];
 
-  if (fungicideBtn) {
-    fungicideBtn.disabled =
-      !activeProblem || activeProblem.treatment !== "fungicide" || problemPhase !== "active";
-    fungicideBtn.textContent = `🦠 Проти грибка (${fungicideLeft})`;
-  }
+  fungicideBtn.disabled =
+    !activeProblem || activeProblem.treatment !== "fungicide" || problemPhase !== "active";
 
-  if (insecticideBtn) {
-    insecticideBtn.disabled =
-      !activeProblem || activeProblem.treatment !== "insecticide" || problemPhase !== "active";
-    insecticideBtn.textContent = `🐞 Проти шкідників (${insecticideLeft})`;
-  }
+  insecticideBtn.disabled =
+    !activeProblem || activeProblem.treatment !== "insecticide" || problemPhase !== "active";
 
   updateVisual();
 }
 
 /* ===================== ВІЗУАЛ ===================== */
 function updateVisual() {
-  if (!currentPlant || !img) return;
   const id = currentPlant.id;
-
   img.src =
     plantState === "dead"
       ? `images/${id}/dead.png`
@@ -387,18 +294,14 @@ function updateVisual() {
 /* ===================== ГРАФІК ===================== */
 function drawChart() {
   if (!ctx || history.length < 2) return;
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(0, 0, 320, 150);
   ctx.beginPath();
-
   history.slice(-30).forEach((h, i, arr) => {
-    const x = (i / (arr.length - 1)) * canvas.width;
-    const y = canvas.height - (h / 100) * canvas.height;
+    const x = (i / (arr.length - 1)) * 320;
+    const y = 150 - (h / 100) * 150;
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
   });
-
   ctx.strokeStyle = "#2e7d32";
-  ctx.lineWidth = 2;
   ctx.stroke();
 }
 
