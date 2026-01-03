@@ -1,24 +1,37 @@
 /* =====================================================
    PLANTAGOTCHI — PROBLEMS.JS
-   КРОК 2: симптоми ≠ причина
-   Оптимізована версія
+   КРОК 2: СИМПТОМИ ≠ ПРИЧИНА
+   Біологічно коректні проблеми кімнатних рослин
    ===================================================== */
+
+/*
+  ВАЖЛИВО:
+  - symptom: те, що бачить гравець
+  - realCause: реальна біологічна причина
+  - trigger: умови, за яких проблема МОЖЕ з’явитися
+  - effect: повільний негативний вплив, якщо не лікувати
+  - treatment: правильне лікування (або null)
+*/
 
 const plantProblems = {
 
-  /* =========================
-     КВАСОЛЯ
-     ========================= */
+  /* =====================================================
+     КВАСОЛЯ (Phaseolus vulgaris)
+     ===================================================== */
   bean: [
 
     {
       id: "bean_root_fungus",
+
       symptom: "🍂 Листя в’яне і темніє",
+
       realCause: "fungus",
+
       treatment: "fungicide",
 
       trigger: env =>
-        env.waterLevel > 80 && env.soilAeration < 50,
+        env.waterLevel > 80 &&
+        env.soilAeration < 50,
 
       effect: state => {
         state.health -= 3;
@@ -29,8 +42,11 @@ const plantProblems = {
 
     {
       id: "bean_temp_shock",
+
       symptom: "🌡 Листя втрачає тургор",
+
       realCause: "temperature_fluctuation",
+
       treatment: null,
 
       trigger: env =>
@@ -44,12 +60,16 @@ const plantProblems = {
 
     {
       id: "bean_aphids",
+
       symptom: "🐞 Дрібні пошкодження на листі",
+
       realCause: "pests",
+
       treatment: "insecticide",
 
       trigger: env =>
-        env.airHumidity < 35 && env.immunity < 50,
+        env.airHumidity < 35 &&
+        env.immunity < 50,
 
       effect: state => {
         state.waterLevel -= 4;
@@ -58,19 +78,23 @@ const plantProblems = {
     }
   ],
 
-  /* =========================
-     ТРОЯНДА
-     ========================= */
+  /* =====================================================
+     ТРОЯНДА (Rosa)
+     ===================================================== */
   rose: [
 
     {
       id: "rose_powdery_mildew",
+
       symptom: "🌫 Білий наліт на листі",
+
       realCause: "fungus",
+
       treatment: "fungicide",
 
       trigger: env =>
-        env.airHumidity > 75 && env.airFlow < 30,
+        env.airHumidity > 75 &&
+        env.airFlow < 30,
 
       effect: state => {
         state.health -= 4;
@@ -80,8 +104,11 @@ const plantProblems = {
 
     {
       id: "rose_bud_failure",
+
       symptom: "🌸 Бутони не розкриваються",
+
       realCause: "low_light",
+
       treatment: null,
 
       trigger: env =>
@@ -94,12 +121,16 @@ const plantProblems = {
 
     {
       id: "rose_root_rot",
+
       symptom: "⚠️ Рослина різко в’яне",
+
       realCause: "fungus",
+
       treatment: "fungicide",
 
       trigger: env =>
-        env.waterLevel > 85 && env.soilAeration < 45,
+        env.waterLevel > 85 &&
+        env.soilAeration < 45,
 
       effect: state => {
         state.health -= 6;
@@ -108,15 +139,18 @@ const plantProblems = {
     }
   ],
 
-  /* =========================
-     М’ЯТА
-     ========================= */
+  /* =====================================================
+     М’ЯТА (Mentha)
+     ===================================================== */
   mint: [
 
     {
       id: "mint_overgrowth",
+
       symptom: "🌿 Листя дрібнішає, ріст нестабільний",
+
       realCause: "overgrowth",
+
       treatment: null,
 
       trigger: env =>
@@ -130,12 +164,16 @@ const plantProblems = {
 
     {
       id: "mint_spider_mite",
+
       symptom: "🕸 На листі з’являється павутинка",
+
       realCause: "pests",
+
       treatment: "insecticide",
 
       trigger: env =>
-        env.airHumidity < 30 && env.temperature > 26,
+        env.airHumidity < 30 &&
+        env.temperature > 26,
 
       effect: state => {
         state.waterLevel -= 3;
@@ -145,8 +183,11 @@ const plantProblems = {
 
     {
       id: "mint_leaf_rot",
+
       symptom: "⚠️ Нижні листки втрачають тургор",
+
       realCause: "fungus",
+
       treatment: "fungicide",
 
       trigger: env =>
@@ -160,9 +201,9 @@ const plantProblems = {
   ]
 };
 
-/* =========================
-   EXPORT
-   ========================= */
+/* =====================================================
+   ЕКСПОРТ (для модульного використання)
+   ===================================================== */
 if (typeof module !== "undefined") {
   module.exports = { plantProblems };
 }
