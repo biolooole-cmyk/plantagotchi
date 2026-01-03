@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Plantagotchi - навчальна біологічна гра про догляд за рослинами">
-  <meta name="keywords" content="біологія, рослини, навчання, гра, STEM">
+  <meta name="description" content="Plantagotchi — навчальна STEM-гра про екосистему кімнатної рослини">
+  <meta name="keywords" content="біологія, рослини, STEM, екосистема, навчальна гра">
   <title>Plantagotchi — навчальна біологічна гра</title>
   <link rel="stylesheet" href="style.css">
 </head>
@@ -13,7 +13,7 @@
 <!-- ================= HEADER ================= -->
 <header>
   <h1>🌱 Plantagotchi</h1>
-  <p>Навчальна гра з біології: системний догляд за рослиною</p>
+  <p>Навчальна STEM-гра: екосистема кімнатної рослини</p>
 </header>
 
 <!-- ================= MAIN LAYOUT ================= -->
@@ -36,9 +36,6 @@
     <div class="controls">
       <button onclick="water()" aria-label="Полити рослину">💧 Полити</button>
       <button onclick="changeLight()" aria-label="Змінити освітлення">☀️ Змінити освітлення</button>
-      <button onclick="fertilize('N')" aria-label="Додати азот">🌿 Азот (N)</button>
-      <button onclick="fertilize('P')" aria-label="Додати фосфор">🌸 Фосфор (P)</button>
-      <button onclick="fertilize('K')" aria-label="Додати калій">🍃 Калій (K)</button>
       <button onclick="warm()" aria-label="Зігріти">🔥 Зігріти</button>
     </div>
     
@@ -71,21 +68,6 @@
       <div class="indicator">
         <span class="label">🌡️ Температура</span>
         <progress id="tempBar" max="100" value="0" aria-label="Рівень температури"></progress>
-      </div>
-      
-      <div class="indicator">
-        <span class="label">🌿 Азот (N)</span>
-        <progress id="nBar" max="100" value="0" aria-label="Рівень азоту"></progress>
-      </div>
-      
-      <div class="indicator">
-        <span class="label">🌸 Фосфор (P)</span>
-        <progress id="pBar" max="100" value="0" aria-label="Рівень фосфору"></progress>
-      </div>
-      
-      <div class="indicator">
-        <span class="label">🍃 Калій (K)</span>
-        <progress id="kBar" max="100" value="0" aria-label="Рівень калію"></progress>
       </div>
       
       <div class="indicator">
